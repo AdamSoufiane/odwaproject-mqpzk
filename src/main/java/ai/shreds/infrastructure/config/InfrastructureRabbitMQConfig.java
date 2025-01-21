@@ -1,6 +1,8 @@
 package ai.shreds.infrastructure.config;
 
 import ai.shreds.infrastructure.config.properties.RabbitMQProperties;
+import ai.shreds.infrastructure.exceptions.InfrastructureException;
+import ai.shreds.infrastructure.exceptions.InfrastructureErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +14,9 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.KeyManagementException;
 
 @Slf4j
 @Configuration
@@ -37,7 +42,13 @@ public class InfrastructureRabbitMQConfig {
         factory.setConnectionTimeout(rabbitProperties.getConnectionTimeout());
 
         if (rabbitProperties.isSslEnabled()) {
-            factory.getRabbitConnectionFactory().useSslProtocol();
+            try {
+                factory.getRabbitConnectionFactory().useSslProtocol();
+            } catch (NoSuchAlgorithmException | KeyManagementException e) {
+                log.error("Failed to enable SSL protocol for RabbitMQ connection", e);
+                throw new InfrastructureException("Failed to enable SSL for RabbitMQ", 
+                    InfrastructureErrorCode.RABBITMQ_CONNECTION_ERROR);
+            }
         }
 
         return factory;

@@ -4,12 +4,14 @@ import ai.shreds.domain.entities.DomainEntityScanTask;
 import ai.shreds.domain.exceptions.DomainException;
 import ai.shreds.domain.exceptions.DomainErrorCode;
 import ai.shreds.domain.ports.DomainPortAuthService;
-lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 public class InfrastructureAuthServiceClient implements DomainPortAuthService {
+
+    private static final Logger log = LoggerFactory.getLogger(InfrastructureAuthServiceClient.class);
 
     // In a real implementation, this would be configured via properties
     private static final String AUTH_SERVICE_URL = "http://auth-service/api/v1/authorize";

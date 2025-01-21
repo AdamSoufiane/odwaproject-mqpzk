@@ -13,7 +13,7 @@ public class ErrorResponse {
     private final String errorCode;
     private final String message;
     private final String details;
-    
+
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private final LocalDateTime timestamp;
 
@@ -29,6 +29,7 @@ public class ErrorResponse {
     }
 
     public static ErrorResponse fromException(InfrastructureException ex) {
+        // Ensure ex.getErrorCode() is recognized
         return new ErrorResponse(
             ex.getErrorCode(),
             ex.getMessage(),

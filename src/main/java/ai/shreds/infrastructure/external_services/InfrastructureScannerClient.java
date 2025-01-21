@@ -7,7 +7,8 @@ import ai.shreds.domain.exceptions.DomainErrorCode;
 import ai.shreds.domain.ports.DomainPortScanner;
 import ai.shreds.domain.value_objects.DomainValueScanFindings;
 import ai.shreds.domain.value_objects.DomainValueSeverityEnum;
-lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,9 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Slf4j
 @Service
 public class InfrastructureScannerClient implements DomainPortScanner {
+
+    private static final Logger log = LoggerFactory.getLogger(InfrastructureScannerClient.class);
 
     @Override
     public DomainEntityRawScanResult performProtocolScan(DomainEntityScanTask task) {
@@ -54,11 +56,11 @@ public class InfrastructureScannerClient implements DomainPortScanner {
         result.setTimestamp(LocalDateTime.now().toString());
         result.setScanExecutionLogs(logs);
 
-        DomainValueScanFindings findings = new DomainValueScanFindings();
+        DomainValueScanFindings findings;
         if (!vulnerabilities.isEmpty()) {
-            findings.setSeverity(DomainValueSeverityEnum.HIGH);
+            findings = new DomainValueScanFindings(vulnerabilities, DomainValueSeverityEnum.HIGH);
         } else {
-            findings.setSeverity(DomainValueSeverityEnum.LOW);
+            findings = new DomainValueScanFindings(vulnerabilities, DomainValueSeverityEnum.LOW);
         }
         result.setFindings(findings);
 
@@ -69,8 +71,7 @@ public class InfrastructureScannerClient implements DomainPortScanner {
         List<String> vulnerabilities = new ArrayList<>();
         List<String> logs = new ArrayList<>();
         logs.add("Simulating scan for protocol: " + protocol);
-        // Here we can simulate vulnerabilities, for example
-        // If the protocol is "FTP" or "HTTP" etc we can randomly add vulnerabilities
+        // Here we can simulate vulnerabilities
         if (Math.random() > 0.7) {
             vulnerabilities.add("Potential vulnerability found in protocol: " + protocol);
         }

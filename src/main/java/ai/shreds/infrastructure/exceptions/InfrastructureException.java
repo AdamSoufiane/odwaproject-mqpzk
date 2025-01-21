@@ -5,9 +5,6 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-/**
- * Exception thrown by the infrastructure layer when infrastructure-related operations fail.
- */
 @Getter
 public class InfrastructureException extends RuntimeException {
 
@@ -43,5 +40,10 @@ public class InfrastructureException extends RuntimeException {
         this.errorCode = errorCode;
         this.infrastructureErrorCode = null;
         this.timestamp = LocalDateTime.now();
+    }
+
+    // Explicit getter to guarantee existence
+    public String getErrorCode() {
+        return errorCode;
     }
 }

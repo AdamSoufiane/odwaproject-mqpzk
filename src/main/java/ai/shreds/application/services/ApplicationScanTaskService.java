@@ -8,26 +8,30 @@ import ai.shreds.domain.exceptions.DomainException;
 import ai.shreds.domain.ports.DomainPortAuthService;
 import ai.shreds.domain.ports.DomainPortScanTaskRepository;
 import ai.shreds.domain.ports.DomainScanTaskPort;
+import ai.shreds.domain.value_objects.DomainValueSchedulingMetadata;
 import ai.shreds.shared.dtos.SharedScanTaskDTO;
 import ai.shreds.shared.dtos.SharedScanTaskRequestDTO;
 import ai.shreds.shared.enums.SharedScanStatusEnum;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-@Slf4j
 @Service
 public class ApplicationScanTaskService implements ApplicationScanTaskInputPort {
+
+    private static final Logger log = LoggerFactory.getLogger(ApplicationScanTaskService.class);
 
     private final DomainScanTaskPort domainScanTaskPort;
     private final DomainPortScanTaskRepository domainPortScanTaskRepository;
     private final DomainPortAuthService domainPortAuthService;
 
-    public ApplicationScanTaskService(DomainScanTaskPort domainScanTaskPort,
-                                    DomainPortScanTaskRepository domainPortScanTaskRepository,
-                                    DomainPortAuthService domainPortAuthService) {
+    public ApplicationScanTaskService(
+            DomainScanTaskPort domainScanTaskPort,
+            DomainPortScanTaskRepository domainPortScanTaskRepository,
+            DomainPortAuthService domainPortAuthService) {
         this.domainScanTaskPort = domainScanTaskPort;
         this.domainPortScanTaskRepository = domainPortScanTaskRepository;
         this.domainPortAuthService = domainPortAuthService;
@@ -123,8 +127,9 @@ public class ApplicationScanTaskService implements ApplicationScanTaskInputPort 
         }
 
         if (request.getSchedulingMetadata() != null) {
-            domainTask.getSchedulingMetadata().setStartTime(
-                request.getSchedulingMetadata().getStartTime().toString()
+            // Instead of .setStartTime, create a new DomainValueSchedulingMetadata from the string
+            domainTask.setSchedulingMetadata(
+                new DomainValueSchedulingMetadata(request.getSchedulingMetadata().getStartTime())
             );
         }
 

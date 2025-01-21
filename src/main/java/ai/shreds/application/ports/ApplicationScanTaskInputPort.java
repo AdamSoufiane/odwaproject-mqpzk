@@ -1,7 +1,7 @@
 package ai.shreds.application.ports;
 
-import ai.shreds.shared.SharedScanTaskDTO;
-import ai.shreds.shared.SharedScanTaskRequestDTO;
+import ai.shreds.shared.dtos.SharedScanTaskDTO;
+import ai.shreds.shared.dtos.SharedScanTaskRequestDTO;
 
 public interface ApplicationScanTaskInputPort {
 

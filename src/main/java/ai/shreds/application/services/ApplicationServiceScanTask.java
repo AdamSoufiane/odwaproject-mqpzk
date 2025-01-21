@@ -6,6 +6,7 @@ import ai.shreds.domain.ports.DomainPortAuthService;
 import ai.shreds.domain.ports.DomainPortScanTaskRepository;
 import ai.shreds.domain.ports.DomainScanTaskPort;
 import ai.shreds.domain.entities.DomainEntityScanTask;
+import ai.shreds.domain.value_objects.DomainValueSchedulingMetadata;
 import ai.shreds.shared.dtos.SharedScanTaskDTO;
 import ai.shreds.shared.dtos.SharedScanTaskRequestDTO;
 import ai.shreds.shared.enums.SharedScanStatusEnum;
@@ -115,9 +116,11 @@ public class ApplicationServiceScanTask implements ApplicationScanTaskInputPort 
         }
 
         if (request.getSchedulingMetadata() != null) {
-            domainTask.getSchedulingMetadata().setStartTime(
-                request.getSchedulingMetadata().getStartTime().toString()
+            // Create a new DomainValueSchedulingMetadata instance with the start time from the request
+            DomainValueSchedulingMetadata schedulingMetadata = new DomainValueSchedulingMetadata(
+                request.getSchedulingMetadata().getStartTime()
             );
+            domainTask.setSchedulingMetadata(schedulingMetadata);
         }
 
         return domainTask;

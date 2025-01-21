@@ -1,20 +1,13 @@
 package ai.shreds.shared.dtos;
 
 import ai.shreds.shared.enums.SharedScanStatusEnum;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
  * DTO representing the result of a scan operation.
- * Contains the status, result identifier, and a summary of findings.
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class SharedScanResultDTO {
 
     @NotNull(message = "Status cannot be null")
@@ -28,4 +21,51 @@ public class SharedScanResultDTO {
 
     @NotBlank(message = "Scan task ID cannot be blank")
     private String scanTaskId;
+
+    // Explicit no-args constructor
+    public SharedScanResultDTO() {
+    }
+
+    // Explicit all-args constructor
+    public SharedScanResultDTO(SharedScanStatusEnum status,
+                               String resultId,
+                               String summary,
+                               String scanTaskId) {
+        this.status = status;
+        this.resultId = resultId;
+        this.summary = summary;
+        this.scanTaskId = scanTaskId;
+    }
+
+    public SharedScanStatusEnum getStatus() {
+        return status;
+    }
+
+    public void setStatus(SharedScanStatusEnum status) {
+        this.status = status;
+    }
+
+    public String getResultId() {
+        return resultId;
+    }
+
+    public void setResultId(String resultId) {
+        this.resultId = resultId;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
+    public String getScanTaskId() {
+        return scanTaskId;
+    }
+
+    public void setScanTaskId(String scanTaskId) {
+        this.scanTaskId = scanTaskId;
+    }
 }

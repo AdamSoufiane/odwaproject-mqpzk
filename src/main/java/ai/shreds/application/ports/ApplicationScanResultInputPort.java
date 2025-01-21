@@ -1,7 +1,7 @@
 package ai.shreds.application.ports;
 
-import ai.shreds.shared.SharedScanCompletionDTO;
-import ai.shreds.shared.SharedScanResultDTO;
+import ai.shreds.shared.dtos.SharedScanCompletionDTO;
+import ai.shreds.shared.dtos.SharedScanResultDTO;
 
 public interface ApplicationScanResultInputPort {
 

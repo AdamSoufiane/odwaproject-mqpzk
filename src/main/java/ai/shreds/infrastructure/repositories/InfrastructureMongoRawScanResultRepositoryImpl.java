@@ -5,7 +5,8 @@ import ai.shreds.domain.exceptions.DomainException;
 import ai.shreds.domain.exceptions.DomainErrorCode;
 import ai.shreds.domain.ports.DomainPortRawScanResultRepository;
 import ai.shreds.infrastructure.repositories.documents.RawScanResultDocument;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -15,9 +16,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Repository
 public class InfrastructureMongoRawScanResultRepositoryImpl implements DomainPortRawScanResultRepository {
+
+    private static final Logger log = LoggerFactory.getLogger(InfrastructureMongoRawScanResultRepositoryImpl.class);
 
     private final MongoTemplate mongoTemplate;
 
@@ -72,7 +74,11 @@ public class InfrastructureMongoRawScanResultRepositoryImpl implements DomainPor
         document.setVulnerabilityFindingsList(entity.getVulnerabilityFindingsList());
         document.setTimestamp(entity.getTimestamp());
         document.setScanExecutionLogs(entity.getScanExecutionLogs());
-        document.setSeverity(entity.getFindings().getSeverity().getValue());
+        if (entity.getFindings() != null && entity.getFindings().getSeverity() != null) {
+            document.setSeverity(entity.getFindings().getSeverity().getValue());
+        } else {
+            document.setSeverity("INFO");
+        }
         return document;
     }
 }
