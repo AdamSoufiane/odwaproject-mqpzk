@@ -16,7 +16,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.springframework.stereotype.Repository;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +46,7 @@ public class InfrastructureMongoRawScanResultRepositoryImpl {
             MongoCollection<Document> collection = db.getCollection(COLLECTION_NAME);
 
             // Create indexes
-            collection.createIndex(Indexes.ascending("id"), 
+            collection.createIndex(Indexes.ascending("id"),
                     new IndexOptions().unique(true));
             collection.createIndex(Indexes.ascending("scanTaskId"));
             collection.createIndex(Indexes.ascending("timestamp"));

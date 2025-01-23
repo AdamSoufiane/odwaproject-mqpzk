@@ -61,7 +61,7 @@ public class DomainServiceScanOrchestrator implements DomainScanTaskPort {
         } catch (Exception e) {
             log.error("Unexpected error during scan execution for task {}", scanTask.getTaskId(), e);
             throw new DomainExceptionScanExecution(
-                    String.format("Failed to execute scan for task %s: %s", 
+                    String.format("Failed to execute scan for task %s: %s",
                             scanTask.getTaskId(), e.getMessage()), e);
         }
     }
@@ -71,9 +71,11 @@ public class DomainServiceScanOrchestrator implements DomainScanTaskPort {
      * Performs comprehensive validation of all required fields and values.
      *
      * @param scanTask The scan task to validate
+     * @return true if validation passes
      * @throws DomainExceptionScanValidation if validation fails
      */
-    private void validateScanTask(DomainScanTaskEntity scanTask) {
+    @Override
+    public boolean validateScanTask(DomainScanTaskEntity scanTask) {
         if (scanTask == null) {
             throw new DomainExceptionScanValidation("Scan task entity cannot be null");
         }
@@ -102,6 +104,8 @@ public class DomainServiceScanOrchestrator implements DomainScanTaskPort {
                         String.format("URL %s does not match any of the specified protocols", url));
             }
         });
+
+        return true;
     }
 
     /**

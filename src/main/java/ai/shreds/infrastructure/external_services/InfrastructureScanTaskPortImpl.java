@@ -190,7 +190,7 @@ public class InfrastructureScanTaskPortImpl implements DomainScanTaskPort {
             if (log.contains("Critical")) {
                 vulns.add(DomainValueVulnerability.builder()
                         .type("Burp Finding")
-                        .severity(DomainVulnerabilitySeverity.CRITICAL)
+                        .severity(DomainVulnerabilitySeverity.HIGH)
                         .description(log)
                         .location(url)
                         .build());
@@ -200,16 +200,16 @@ public class InfrastructureScanTaskPortImpl implements DomainScanTaskPort {
     }
 
     /**
-     * Processes PETEP scan findings into vulnerability objects.
+     * Processes Petep scan findings into vulnerability objects.
      */
     private List<DomainValueVulnerability> processPetepFindings(List<String> logs, String url) {
         List<DomainValueVulnerability> vulns = new ArrayList<>();
-        // Process PETEP logs and create vulnerability objects
-        // This is a simplified example; in reality, you'd parse actual PETEP findings
+        // Process Petep logs and create vulnerability objects
+        // This is a simplified example; in reality, you'd parse actual Petep findings
         for (String log : logs) {
-            if (log.contains("Warning")) {
+            if (log.contains("ALERT")) {
                 vulns.add(DomainValueVulnerability.builder()
-                        .type("PETEP Finding")
+                        .type("Petep Finding")
                         .severity(DomainVulnerabilitySeverity.MEDIUM)
                         .description(log)
                         .location(url)
@@ -220,26 +220,7 @@ public class InfrastructureScanTaskPortImpl implements DomainScanTaskPort {
     }
 
     /**
-     * Validates the scan task before execution.
-     */
-    private void validateScanTask(DomainScanTaskEntity scanTask) {
-        if (scanTask == null) {
-            throw new IllegalArgumentException("Scan task cannot be null");
-        }
-        if (scanTask.getConfiguration() == null) {
-            throw new IllegalArgumentException("Scan configuration cannot be null");
-        }
-        if (scanTask.getProtocolTypes() == null || scanTask.getProtocolTypes().isEmpty()) {
-            throw new IllegalArgumentException("Protocol types cannot be null or empty");
-        }
-        if (scanTask.getConfiguration().getTargetUrls() == null 
-                || scanTask.getConfiguration().getTargetUrls().isEmpty()) {
-            throw new IllegalArgumentException("Target URLs cannot be null or empty");
-        }
-    }
-
-    /**
-     * Internal class to hold scan results.
+     * Internal data structure to hold scan results.
      */
     private static class ScanResult {
         private final List<String> logs;

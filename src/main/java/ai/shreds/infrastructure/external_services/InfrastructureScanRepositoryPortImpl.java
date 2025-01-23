@@ -18,7 +18,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +46,7 @@ public class InfrastructureScanRepositoryPortImpl implements DomainScanRepositor
             MongoCollection<Document> collection = db.getCollection(COLLECTION_NAME);
 
             // Create indexes
-            collection.createIndex(Indexes.ascending("resultId"), 
+            collection.createIndex(Indexes.ascending("resultId"),
                     new IndexOptions().unique(true));
             collection.createIndex(Indexes.ascending("scanTaskId"));
             collection.createIndex(Indexes.ascending("timestamp"));
@@ -79,7 +79,7 @@ public class InfrastructureScanRepositoryPortImpl implements DomainScanRepositor
         } catch (Exception e) {
             log.error("Failed to save processed scan result", e);
             throw new InfrastructureExceptionMongo(
-                    "Failed to save processed scan result", 
+                    "Failed to save processed scan result",
                     COLLECTION_NAME, "SAVE", "SAVE_ERROR", e);
         }
     }

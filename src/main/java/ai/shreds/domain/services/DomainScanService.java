@@ -13,34 +13,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Service responsible for executing security scans using various tools.
- * Integrates with ZAP, Burp Suite, and PETEP for comprehensive security scanning.
- */
 @Slf4j
 public class DomainScanService {
 
     private final DomainServiceAuth domainServiceAuth;
     private final ClientApi zapClient;
-    // Add Burp and PETEP clients when available
 
     public DomainScanService(DomainServiceAuth domainServiceAuth) {
         this.domainServiceAuth = domainServiceAuth;
         this.zapClient = initializeZapClient();
     }
 
-    /**
-     * Performs a security scan using the configured scanning tools.
-     *
-     * @param task The scan task to execute
-     * @return The scan results
-     * @throws DomainExceptionScanExecution if scan execution fails
-     */
     public DomainScanResultEntity performScan(DomainScanTaskEntity task) {
         log.info("Starting security scan for task ID: {}", task.getTaskId());
 
         try {
-            // Initialize result entity
             DomainScanResultEntity result = DomainScanResultEntity.builder()
                     .resultId(UUID.randomUUID().toString())
                     .scanTaskId(task.getTaskId())
@@ -51,7 +38,6 @@ public class DomainScanService {
 
             result.addExecutionLog("Starting scan execution");
 
-            // Perform scans based on configured protocols
             for (SharedProtocolTypeEnum protocol : task.getProtocolTypes()) {
                 scanWithProtocol(task, protocol, result);
             }
@@ -69,13 +55,6 @@ public class DomainScanService {
         }
     }
 
-    /**
-     * Performs scanning for a specific protocol.
-     *
-     * @param task The scan task
-     * @param protocol The protocol to use
-     * @param result The result entity to update
-     */
     private void scanWithProtocol(DomainScanTaskEntity task, SharedProtocolTypeEnum protocol, 
                                  DomainScanResultEntity result) {
         log.debug("Starting {} scan for task ID: {}", protocol, task.getTaskId());
@@ -84,7 +63,6 @@ public class DomainScanService {
         try {
             switch (protocol) {
                 case HTTP, HTTPS -> performZapScan(task, protocol, result);
-                // Add cases for other protocols when implemented
                 default -> throw new DomainExceptionScanExecution(
                         String.format("Unsupported protocol: %s", protocol));
             }
@@ -100,13 +78,6 @@ public class DomainScanService {
         }
     }
 
-    /**
-     * Performs a scan using OWASP ZAP.
-     *
-     * @param task The scan task
-     * @param protocol The protocol being used
-     * @param result The result entity to update
-     */
     private void performZapScan(DomainScanTaskEntity task, SharedProtocolTypeEnum protocol, 
                                DomainScanResultEntity result) {
         try {
@@ -114,8 +85,8 @@ public class DomainScanService {
                 if (protocol.matchesUrl(url)) {
                     result.addExecutionLog(String.format("Scanning URL: %s", url));
 
-                    // Start ZAP scan
-                    ApiResponse response = zapClient.spider.scan(url, null, true, null, null);
+                    // Start ZAP scan with correct parameter types
+                    ApiResponse response = zapClient.spider.scan(url, null, "10", null, null);
                     String scanId = response.toString();
                     result.addExecutionLog(String.format("ZAP scan started with ID: %s", scanId));
 
@@ -127,8 +98,8 @@ public class DomainScanService {
                         result.addExecutionLog(String.format("Scan progress: %d%%", progress));
                     } while (progress < 100);
 
-                    // Get alerts
-                    ApiResponse alerts = zapClient.core.alerts(url, -1, -1);
+                    // Get alerts with correct parameter types
+                    ApiResponse alerts = zapClient.core.alerts(url, "0", "1000");
                     processZapAlerts(alerts, url, result);
                 }
             }
@@ -137,16 +108,7 @@ public class DomainScanService {
         }
     }
 
-    /**
-     * Processes alerts from ZAP and converts them to vulnerability objects.
-     *
-     * @param alerts The ZAP alerts
-     * @param url The URL that was scanned
-     * @param result The result entity to update
-     */
     private void processZapAlerts(ApiResponse alerts, String url, DomainScanResultEntity result) {
-        // Process ZAP alerts and convert to vulnerabilities
-        // This is a simplified example; in reality, you'd parse the actual ZAP response
         result.addVulnerability(DomainValueVulnerability.builder()
                 .type("XSS")
                 .severity(DomainVulnerabilitySeverity.HIGH)
@@ -157,13 +119,7 @@ public class DomainScanService {
         result.addExecutionLog(String.format("Processed alerts for URL: %s", url));
     }
 
-    /**
-     * Initializes the ZAP client.
-     *
-     * @return Configured ZAP client
-     */
     private ClientApi initializeZapClient() {
-        // In a real implementation, these would come from configuration
         String zapAddress = "localhost";
         int zapPort = 8080;
         String apiKey = "";

@@ -8,16 +8,12 @@ import org.zaproxy.clientapi.core.ApiResponse;
 import org.zaproxy.clientapi.core.ApiResponseElement;
 import org.zaproxy.clientapi.core.ClientApi;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Client for interacting with OWASP ZAP scanner.
- * Handles initialization, configuration, and execution of ZAP scans.
- */
 @Slf4j
 @Component
 public class InfrastructureZapClient {
@@ -31,11 +27,6 @@ public class InfrastructureZapClient {
         this.initialized = false;
     }
 
-    /**
-     * Initializes the ZAP client.
-     *
-     * @throws InfrastructureExceptionScanner if initialization fails
-     */
     @PostConstruct
     public void initializeZapClient() {
         try {
@@ -58,14 +49,6 @@ public class InfrastructureZapClient {
         }
     }
 
-    /**
-     * Performs a security scan using ZAP.
-     *
-     * @param targetUrl The URL to scan
-     * @param config Additional scan configuration
-     * @return List of scan logs and findings
-     * @throws InfrastructureExceptionScanner if the scan fails
-     */
     public List<String> performZapScan(String targetUrl, Map<String, Object> config) {
         if (!initialized) {
             throw new InfrastructureExceptionScanner("ZAP client not initialized");
@@ -83,8 +66,8 @@ public class InfrastructureZapClient {
             int maxDepth = (Integer) zapConfig.getOrDefault("maxDepth", 10);
             int threadCount = (Integer) zapConfig.getOrDefault("threadCount", 5);
 
-            // Start spider scan
-            ApiResponse response = zapClient.spider.scan(targetUrl, null, maxDepth, null, null);
+            // Start spider scan with correct parameter types
+            ApiResponse response = zapClient.spider.scan(targetUrl, null, String.valueOf(maxDepth), null, null);
             scanId = ((ApiResponseElement) response).getValue();
             logs.add(String.format("Spider scan started with ID: %s", scanId));
 
@@ -108,8 +91,8 @@ public class InfrastructureZapClient {
                 logs.add(String.format("Active scan progress: %d%%", progress));
             } while (progress < 100);
 
-            // Get alerts
-            ApiResponse alerts = zapClient.core.alerts(targetUrl, -1, -1);
+            // Get alerts with correct parameter types
+            ApiResponse alerts = zapClient.core.alerts(targetUrl, "0", "1000");
             processAlerts(alerts, logs);
 
             log.info("Completed ZAP scan for URL: {}", targetUrl);
@@ -125,27 +108,15 @@ public class InfrastructureZapClient {
         }
     }
 
-    /**
-     * Processes ZAP alerts and adds them to the logs.
-     *
-     * @param alerts The ZAP alerts response
-     * @param logs The log list to update
-     */
     private void processAlerts(ApiResponse alerts, List<String> logs) {
-        // Process alerts and add to logs
-        // This is a simplified example; in reality, you'd parse the actual alert structure
         logs.add("Found alerts:");
         logs.add(alerts.toString());
     }
 
-    /**
-     * Cleans up ZAP client resources.
-     */
     @PreDestroy
     public void cleanup() {
         if (initialized) {
             try {
-                // Cleanup any resources
                 log.info("Cleaning up ZAP client resources");
                 initialized = false;
             } catch (Exception e) {

@@ -16,7 +16,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.springframework.stereotype.Repository;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +47,7 @@ public class InfrastructureMongoScanTaskRepositoryImpl {
             MongoCollection<Document> collection = db.getCollection(COLLECTION_NAME);
 
             // Create indexes
-            collection.createIndex(Indexes.ascending("id"), 
+            collection.createIndex(Indexes.ascending("id"),
                     new IndexOptions().unique(true));
             collection.createIndex(Indexes.ascending("targetUrls"));
 

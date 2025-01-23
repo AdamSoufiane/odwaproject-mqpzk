@@ -2,6 +2,7 @@ package ai.shreds.application.mappers;
 
 import ai.shreds.domain.entities.DomainEntityRawScanResult;
 import ai.shreds.domain.value_objects.DomainValueVulnerability;
+import ai.shreds.domain.value_objects.DomainVulnerabilitySeverity;
 import ai.shreds.shared.dtos.SharedScanResultRequestDTO;
 import ai.shreds.shared.dtos.SharedScanResultResponseDTO;
 import ai.shreds.shared.dtos.SharedVulnerabilityDTO;
@@ -41,7 +42,7 @@ public interface ApplicationScanResultMapper {
         return vulnerabilities.stream()
                 .map(dto -> DomainValueVulnerability.builder()
                         .type(dto.getType())
-                        .severity(dto.getSeverity())
+                        .severity(DomainVulnerabilitySeverity.fromString(dto.getSeverity()))
                         .description(dto.getDescription())
                         .location(dto.getLocation())
                         .build())
